@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  user-service:
+    image: sp878/task-management-system:user-service
+    ports:
+      - "9087:9087"
+    restart: always
+    volumes:
+      - logs:/log
+    depends_on: # Start the depends_on first
+      - database 
+    networks:
+      - user-service-network
+
+  database:
+    image: sp878/task-management-system:tms-database
+    ports:
+      - "5436:5432"
+    restart: always
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - user-service-network  
+  
+volumes:
+  pg-data:
+  logs:
+
+networks:
+  user-service-network:
